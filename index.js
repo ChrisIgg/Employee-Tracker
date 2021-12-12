@@ -5,6 +5,7 @@ const inquirer = require("inquirer");
 // // const { clog } = require("./middlewares/clog");
 // // const api = require("./routes/index.js");
 const mysql = require("mysql2");
+// const { all } = require("sequelize/dist/lib/operators");
 // const sequelize = require("./config/connection");
 require("dotenv").config();
 
@@ -42,10 +43,10 @@ function prompt() {
         name: "view",
         message: "What would you like to do?",
         choices: [
-          "View all Employees",
+          "View All Employees",
           "Add Employee",
           "Update Employee Role",
-          "View all Roles",
+          "View All Roles",
           "Add Role",
           "View All Departments",
           "Add Department",
@@ -53,21 +54,49 @@ function prompt() {
       },
     ])
     .then((response) => {
-      console.log(response);
       switch (response.view) {
         case "View All Departments":
           allDepartments();
           break;
+        case "View All Roles":
+          allRoles();
+          break;
+        case "View All Employees":
+          allEmployees();
+          break;
       }
+
       // console.info("Answer:", response.view);
     });
 }
 
 function allDepartments() {
-  db.query("SELECT * FROM deparments", function (err, results) {
+  console.log("function runs");
+  db.query("SELECT * FROM departments", function (err, results) {
+    console.log(err);
+    // console.table(results)
     console.log(results);
     init();
   });
+}
+
+function allRoles() {
+  db.query("SELECT * FROM positions", function (err, results) {
+    console.log(err);
+    console.log(results);
+    init();
+  });
+}
+
+function allEmployees() {
+  db.query(
+    "SELECT employees.first_name, employees.last_name, positions.title, positions.salary FROM employees JOIN positions ON employees.positions_id=positions.id",
+    function (err, results) {
+      console.log("error", err);
+      console.log("results", results);
+      init();
+    }
+  );
 }
 
 // sequelize.sync({ force: true }).then(() => {

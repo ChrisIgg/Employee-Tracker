@@ -5,10 +5,11 @@ VALUES ("Camera"),
 ("Art");
 
 INSERT INTO positions (title, departments_id, salary)
-VALUES ("2nd Ac", 1, 200),
+VALUES ("Art PA", 4, 200),
+-- art pa = id 1 and in dept 4
 ("Editor", 2, 400),
 ("Grip", 3, 300),
-("Art Pa", 4, 150);
+("2nd AC", 1, 150);
 
 
 INSERT INTO employees (first_name, last_name, positions_id)
