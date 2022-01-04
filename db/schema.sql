@@ -23,10 +23,11 @@ CREATE TABLE employees (
     last_name VARCHAR(30) NOT NULL,
     positions_id INT,
     FOREIGN KEY (positions_id)
-    REFERENCES positions(id),
-    manager_id INT,
-    FOREIGN KEY (manager_id)
-    REFERENCES employees(id)
+    REFERENCES positions(id)
+    -- ,
+    -- manager_id INT,
+    -- FOREIGN KEY (manager_id)
+    -- REFERENCES employees(id)
 );
 
 

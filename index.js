@@ -1,26 +1,7 @@
 const inquirer = require("inquirer");
-// const express = require("express");
-// // const path = require("path");
-// const { env } = require("process");
-// // const { clog } = require("./middlewares/clog");
-// // const api = require("./routes/index.js");
 const mysql = require("mysql2");
-// const { all } = require("sequelize/dist/lib/operators");
-// const sequelize = require("./config/connection");
+
 require("dotenv").config();
-
-// const app = express();
-// const PORT = process.env.port || 3001;
-
-// app.use(express.json());
-// app.use(express.static("public"));
-// app.use(express.urlencoded({ extended: true }));
-// app.use(clog);
-// app.use("/api", api);
-
-// const db = mysql.createConnection({
-//   host: "",
-// });
 
 const db = mysql.createConnection({
   host: "localhost",
@@ -29,8 +10,6 @@ const db = mysql.createConnection({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
 });
-
-init();
 
 function init() {
   prompt();
@@ -64,9 +43,79 @@ function prompt() {
         case "View All Employees":
           allEmployees();
           break;
+        case "Add Department":
+          addDepartment();
+          break;
+        case "Add Role":
+          addRole();
+          break;
+        case "Update Employee Role":
+          updatePosition();
+          break;
+        case "Add Employee":
+          addEmployee();
+          break;
       }
 
       // console.info("Answer:", response.view);
+    });
+}
+
+function addEmployee() {
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "firstName",
+        message: "Please put in the employee's first name: ",
+      },
+      {
+        type: "input",
+        name: "lastName",
+        message: "Please put in the employee's last name: ",
+      },
+      {
+        type: "input",
+        name: "positionsID",
+        message: "Please put in the ID of the employee's position: ",
+      },
+    ])
+    .then((response) => {
+      db.query(
+        `INSERT INTO employees (first_name, last_name, positions_id) VALUES ("${response.firstName}", "${response.lastName}", ${response.positionsID})`,
+        function (err, results) {
+          console.log("error", err);
+          console.log("results", results);
+          init();
+        }
+      );
+    });
+}
+
+function updatePosition() {
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "employeeID",
+        message:
+          "Please put in the ID of the employee who's role you'd like to change: ",
+      },
+      {
+        type: "input",
+        name: "newID",
+        message: "Please put in the ID of the new position for this employee: ",
+      },
+    ])
+    .then((response) => {
+      db.query(
+        `UPDATE employees SET positions_id = ${response.newID} WHERE id = ${response.employeeID}`,
+        function (err, results) {
+          console.log("error", err);
+          console.log("results", results);
+          init();
+        }
+      );
     });
 }
 
@@ -99,6 +148,60 @@ function allEmployees() {
   );
 }
 
-// sequelize.sync({ force: true }).then(() => {
-//   app.listen(PORT, () => console.log("Now listening"));
-// });
+function addDepartment() {
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "deptName",
+        message: "What department would you like to add?",
+      },
+    ])
+    .then((response) => {
+      console.log("response", response);
+      console.log("response.deptName", response.deptName);
+      db.query(
+        `INSERT INTO departments (name) VALUES ('${response.deptName}')`,
+        function (err, results) {
+          console.log("error", err);
+          console.log("results", results);
+          init();
+        }
+      );
+    });
+}
+
+function addRole() {
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "positionName",
+        message: "What would position would you like to add?",
+      },
+      {
+        type: "input",
+        name: "departmentID",
+        message: "What is the ID of the department this would be entered into?",
+      },
+      {
+        type: "input",
+        name: "dayRate",
+        message: "What is their day rate?",
+      },
+    ])
+    .then((response) => {
+      console.log("response", response);
+      console.log("response.positionName", response.positionName);
+      db.query(
+        `INSERT INTO positions (title, departments_id, salary) VALUES ('${response.positionName}', '${response.departmentID}', '${response.dayRate}')`,
+        function (err, results) {
+          console.log("error", err);
+          console.log("results", results);
+          init();
+        }
+      );
+    });
+}
+
+init();
